@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from fastapi import FastAPI, File, UploadFile, HTTPException, Form
 from fastapi.responses import FileResponse
 from fastapi.concurrency import run_in_threadpool
@@ -234,7 +233,9 @@ async def sign_document(uuid: str = Path(...), signer_email: str = Path(...)):
         signer = signers_list[current_index]
         input_path = session_data["file_path"]
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_path = input_path.replace(".pdf", f"_signed_{current_index}.pdf")
+        # output_path = input_path.replace(".pdf", f"_signed_{current_index}.pdf")
+        base, _ext = os.path.splitext(input_path)
+        output_path = f"{base}_signed_{current_index}.pdf"
 
         with open(input_path, "rb") as inf:
             w = IncrementalPdfFileWriter(inf, strict=False)
@@ -287,6 +288,15 @@ async def sign_document(uuid: str = Path(...), signer_email: str = Path(...)):
         os.unlink(cert_file_path)
         os.unlink(key_file_path)
 
+        if not os.path.exists(output_path):
+            raise HTTPException(status_code=500, detail="Signed file was not created")
+        
+        file_size = os.path.getsize(output_path)
+        print(f"Signed file created: {output_path} (size: {file_size} bytes)")
+        
+        if file_size < 1000:  # Less than 1KB is suspicious for a PDF
+            print(f"WARNING: Signed file seems too small: {file_size} bytes")
+
         return {
             "message": f"Document signed by {signer['signer_name']}",
             "next_signer": (
@@ -301,6 +311,32 @@ async def sign_document(uuid: str = Path(...), signer_email: str = Path(...)):
     except Exception as e:
         print(f"Error during signing: {str(e)}")  # Log error details
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/multi-sign/download/{uuid}")
+async def download_signed_pdf(uuid : str):
+    session_file_path = os.path.join(SESSION_DIR, f"{uuid}.json")
+                                     
+    if not os.path.exists(session_file_path):
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    with open(session_file_path, "r", encoding="utf-8") as f:
+        session_data=json.load(f)
+
+    signed_file_path = session_data.get("file_path")
+
+    if not signed_file_path or not os.path.exists(signed_file_path):
+        raise HTTPException(status_code=404, detail="Signed PDF not found")
+    
+    myfilename = os.path.basename(signed_file_path)
+
+    return FileResponse(
+        path = signed_file_path,
+        filename = myfilename,
+        media_type = 'application/pdf'
+    )
+
+                                     
 
 def process_signing(pdf_bytes: bytes, original_filename: str, department: str, document_type: str, request_id: str):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -462,7 +498,6 @@ TEST_INITIATOR_ID = "HR001"
 TEST_INITIATOR_DEPT = "Human Resources"
 TEST_WORKFLOW_ID = "invoice"
 
-=======
 from fastapi import FastAPI, File, UploadFile, HTTPException, Form
 from fastapi.responses import FileResponse
 from fastapi.concurrency import run_in_threadpool
@@ -698,7 +733,13 @@ async def sign_document(uuid: str = Path(...), signer_email: str = Path(...)):
         signer = signers_list[current_index]
         input_path = session_data["file_path"]
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_path = input_path.replace(".pdf", f"_signed_{current_index}.pdf")
+        # output_path = input_path.replace(".pdf", f"_signed_{current_index}.pdf")
+
+        base_path, _ = os.path.splitext(input_path)
+        output_path = f"{base_path}_signed_{current_index}.pdf"
+
+        print(f"Input path: {input_path}")
+        print(f"Output path: {output_path}")
 
         with open(input_path, "rb") as inf:
             w = IncrementalPdfFileWriter(inf, strict=False)
@@ -900,7 +941,7 @@ if __name__ == "__main__":
 
 TEST_APIKEY = "FAKECLIENTKEY1234567890ABCDEF12345678"  # Replace with your test key
 
-TEST_UUID = "e317d5f8a6a54e2fb92699491cc75b31"
+TEST_UUID = "9f2a3c4d5e6f7b8c9d0e1f2a3b4c5d6e"
 
 TEST_SIGNERLIST = [
     {
@@ -925,5 +966,3 @@ TEST_SIGNERLIST = [
 TEST_INITIATOR_ID = "HR001"
 TEST_INITIATOR_DEPT = "Human Resources"
 TEST_WORKFLOW_ID = "invoice"
-
->>>>>>> 92be977bfcacbf9d96460763694a87224ff01110
