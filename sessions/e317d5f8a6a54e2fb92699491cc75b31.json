@@ -1,0 +1,29 @@
+{
+    "uuid": "e317d5f8a6a54e2fb92699491cc75b31",
+    "cs": "82f013b582ef39b09a68ad374035628a8e5fc8712c875a22384581ae61793e44",
+    "initiator": {
+        "workid": "HR001",
+        "department": "Human Resources"
+    },
+    "workflow_id": "invoice",
+    "created_at": "20250714_115457",
+    "file_path": "uploads/e317d5f8a6a54e2fb92699491cc75b31_20250714_115457_emptydoc_signed_0.pdf",
+    "signers": [
+        {
+            "signer_workid": "EMP001",
+            "signer_name": "Alice",
+            "signer_email": "alice@example.com",
+            "locations": [
+                {
+                    "page": 1,
+                    "x": 100,
+                    "y": 200
+                }
+            ],
+            "status": "signed",
+            "signed_at": "20250714_120137"
+        }
+    ],
+    "current_index": 1,
+    "completed": true
+}
