@@ -27,7 +27,8 @@ def find_keyword_position(pdf_path, keyword):
                 print(f"Found '{keyword}' on page {page_num + 1}!")
                 # Return first match: (x, y) of bottom-left
                 rect = text_instances[0]
-                x, y = rect.x0, rect.y0
+                x = rect.x0
+                y = page.rect.height - rect.y0  # Adjust y to be relative to the bottom of the page
                 print(f"Position: x={x}, y={y}")
                 doc.close()
                 return {"page": page_num, "x": x, "y": y}

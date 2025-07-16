@@ -2,6 +2,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException, Form
 from fastapi.responses import FileResponse
 from fastapi.concurrency import run_in_threadpool
 import os, json, hashlib
+import fitz
 import tempfile
 from datetime import datetime
 from pyhanko.sign import signers, fields, PdfSigner, PdfSignatureMetadata
@@ -23,13 +24,8 @@ from datetime import datetime
 from pyhanko.sign import signers, fields, PdfSigner, PdfSignatureMetadata
 from pyhanko.stamp import TextStampStyle
 from pyhanko.pdf_utils.text import TextBoxStyle
-from pyhanko.pdf_utils.font import opentype
-from pyhanko.pdf_utils.incremental_writer import IncrementalPdfFileWriter
-from cryptography.hazmat.primitives.serialization import pkcs12
-from cryptography.hazmat.primitives import serialization
-import csv
-from fastapi import Path
-from urllib.parse import unquote
+from text_locator import find_keyword_position
+
 
 
 app = FastAPI()
@@ -824,14 +820,27 @@ async def sign_document(uuid: str = Path(...), signer_email: str = Path(...)):
             w = IncrementalPdfFileWriter(inf, strict=False)
 
             field_names = []
-            for idx, loc in enumerate(signer["locations"]):
+
+            for idx, loc in enumerate(signer.get("locations", [])):
+                keyword = f"Authorised Signature {current_index + 1}"  # dynamic keyword based on signer order
+                detected = find_keyword_position(input_path, keyword)
+
+                if detected:
+                    print(f"Keyword '{keyword}' found: using auto-detected position")
+                    page = detected["page"]
+                    x, y = detected["x"], detected["y"]
+                else:
+                    print(f"Keyword '{keyword}' NOT found: falling back to hardcoded location")
+                    page = loc["page"] - 1  # fallback
+                    x, y = loc["x"], loc["y"]
+
+                box = (x, y, x + 180, y + 50)
                 field_name = f"{signer_email.replace('@','_').replace('.','_')}_sig_{idx}"
                 field_names.append(field_name)
-                box = (loc["x"], loc["y"], loc["x"] + 180, loc["y"] + 50)  # box width 180, height 50
 
                 fields.append_signature_field(
                     w,
-                    sig_field_spec=fields.SigFieldSpec(field_name, box=box, on_page=loc["page"] - 1)
+                    sig_field_spec=fields.SigFieldSpec(field_name, box=box, on_page=page)
                 )
 
             pdf_signer = PdfSigner(
