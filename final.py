@@ -17,15 +17,6 @@ from fastapi import Path
 import fitz
 import glob
 from urllib.parse import unquote
-from fastapi import FastAPI, File, UploadFile, HTTPException, Form
-from fastapi.responses import FileResponse
-from fastapi.concurrency import run_in_threadpool
-import os, json, hashlib
-import tempfile
-from datetime import datetime
-from pyhanko.sign import signers, fields, PdfSigner, PdfSignatureMetadata
-from pyhanko.stamp import TextStampStyle
-from pyhanko.pdf_utils.text import TextBoxStyle
 from text_locator import find_keyword_position
 
 
@@ -357,7 +348,7 @@ async def download_signed_pdf(uuid: str):
                 size = os.path.getsize(file_path)
                 print(f"  {file} ({size} bytes)")
 
-    # ✅ Fallback: search for latest signed file with UUID in filename
+    # fallback search for latest signed file with UUID in filename
     import glob
     fallback_pattern = os.path.join(UPLOAD_DIR, f"{uuid}_*signed*.pdf")
     candidate_files = sorted(glob.glob(fallback_pattern), reverse=True)
