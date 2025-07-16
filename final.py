@@ -4,6 +4,7 @@ from fastapi.concurrency import run_in_threadpool
 import os, json, hashlib
 import fitz
 import tempfile
+from pyhanko.pdf_utils import layout
 from datetime import datetime
 from pyhanko.sign import signers, fields, PdfSigner, PdfSignatureMetadata
 from pyhanko.stamp import TextStampStyle
@@ -484,6 +485,15 @@ def process_signing(pdf_bytes: bytes, original_filename: str, department: str, d
                     font=font_engine if font_engine else None,
                     font_size=12,
                     border_width=1,
+
+                    # Add this box_layout_rule for wrapping and scaling
+                    box_layout_rule=layout.SimpleBoxLayoutRule(
+                        x_align=layout.AxisAlignment.ALIGN_MIN, # Align text to the left
+                        y_align=layout.AxisAlignment.ALIGN_MIN,  # Align text to the top
+                        margins=layout.Margins(left=5, right=5, top=5, bottom=5), # Add some padding
+                        inner_content_scaling=layout.InnerScaling.SHRINK_TO_FIT # THIS IS KEY for wrapping/shrinking
+                    )
+
                 ),
                 background=None,
                 background_opacity=0.5
@@ -850,8 +860,19 @@ async def sign_document(uuid: str = Path(...), signer_email: str = Path(...)):
                     cert_file=cert_file_path
                 ),
                 stamp_style=TextStampStyle(
-                    stamp_text=f"Signed by {signer['signer_name']} (%(signer)s) on %(ts)s",
-                    text_box_style=TextBoxStyle(font=font_engine, font_size=10)
+                    stamp_text=(f"Signed by {signer['signer_name']} (%(signer)s)\n"
+                        f"Email: {signer['signer_email']}\n"
+                        f"Timestamp: %(ts)s\n"),
+                    text_box_style=TextBoxStyle(
+                        font=font_engine,
+                        font_size=8, 
+                        box_layout_rule=layout.SimpleBoxLayoutRule(
+                            x_align=layout.AxisAlignment.ALIGN_MIN, # Align text to the left
+                            y_align=layout.AxisAlignment.ALIGN_MIN,  # Align text to the top
+                            margins=layout.Margins(left=3, right=3, top=3, bottom=3), # Slightly smaller padding
+                            inner_content_scaling=layout.InnerScaling.SHRINK_TO_FIT # THIS IS KEY for wrapping/shrinking
+                        )
+                    )
                 )
             )
             

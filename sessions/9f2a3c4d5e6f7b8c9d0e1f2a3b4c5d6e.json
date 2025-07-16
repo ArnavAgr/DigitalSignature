@@ -1,0 +1,43 @@
+{
+    "uuid": "9f2a3c4d5e6f7b8c9d0e1f2a3b4c5d6e",
+    "cs": "ad32753c4acc9dd8daef24ebebe86a9d7568f806f42a92966e8f36b4c25aa791",
+    "initiator": {
+        "workid": "Hr01",
+        "department": "Hr"
+    },
+    "workflow_id": "Receipt",
+    "created_at": "20250716_130503",
+    "file_path": "uploads\\9f2a3c4d5e6f7b8c9d0e1f2a3b4c5d6e_20250716_130503_emptydoc_2sign_1page_signed_0.pdf",
+    "signers": [
+        {
+            "signer_workid": "EMP001",
+            "signer_name": "Alice",
+            "signer_email": "alice@example.com",
+            "locations": [
+                {
+                    "page": 1,
+                    "x": 300,
+                    "y": 400
+                }
+            ],
+            "status": "signed",
+            "signed_at": "20250716_130554"
+        },
+        {
+            "signer_workid": "EMP002",
+            "signer_name": "Bob",
+            "signer_email": "bob@example.com",
+            "locations": [
+                {
+                    "page": 1,
+                    "x": 150,
+                    "y": 250
+                }
+            ],
+            "status": "pending",
+            "signed_at": null
+        }
+    ],
+    "current_index": 1,
+    "completed": false
+}
