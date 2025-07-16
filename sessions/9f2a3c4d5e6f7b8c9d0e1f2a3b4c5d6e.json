@@ -6,8 +6,8 @@
         "department": "Hr"
     },
     "workflow_id": "Receipt",
-    "created_at": "20250716_170016",
-    "file_path": "uploads\\9f2a3c4d5e6f7b8c9d0e1f2a3b4c5d6e_20250716_170016_emptydoc_2sign_1page_signed_0_signed_1.pdf",
+    "created_at": "20250716_172020",
+    "file_path": "uploads\\9f2a3c4d5e6f7b8c9d0e1f2a3b4c5d6e_20250716_172020_emptydoc_2sign_1page_signed_0_signed_1.pdf",
     "signers": [
         {
             "signer_workid": "EMP001",
@@ -16,12 +16,12 @@
             "locations": [
                 {
                     "page": 1,
-                    "x": 300,
-                    "y": 400
+                    "x": 300.0,
+                    "y": 400.0
                 }
             ],
             "status": "signed",
-            "signed_at": "20250716_170028"
+            "signed_at": "20250716_172048"
         },
         {
             "signer_workid": "EMP002",
@@ -30,14 +30,28 @@
             "locations": [
                 {
                     "page": 1,
-                    "x": 150,
-                    "y": 250
+                    "x": 150.0,
+                    "y": 250.0
                 }
             ],
             "status": "signed",
-            "signed_at": "20250716_170044"
+            "signed_at": "20250716_172102"
+        },
+        {
+            "signer_workid": "",
+            "signer_name": "",
+            "signer_email": "",
+            "locations": [
+                {
+                    "page": 1,
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            ],
+            "status": "pending",
+            "signed_at": null
         }
     ],
     "current_index": 2,
-    "completed": true
+    "completed": false
 }
