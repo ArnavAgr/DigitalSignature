@@ -1,0 +1,4 @@
+CS: ad32753c4acc9dd8daef24ebebe86a9d7568f806f42a92966e8f36b4c25aa791
+
+
+curl "http://127.0.0.1:8000/multi-sign/download/9f2a3c4d5e6f7b8c9d0e1f2a3b4c5d6e" --output signed_new.pdf
