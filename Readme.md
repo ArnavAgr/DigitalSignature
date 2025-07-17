@@ -5,3 +5,6 @@ Navigate to digitalsign_gateway folder
 activate virtual env using - myenv\Scripts\activate
 
 Run -> uvicorn final:app --reload
+
+---------------------------------------------------------------------------------------------------------------------
+to run frontend : python -m streamlit run digital_signing_frontend.py
