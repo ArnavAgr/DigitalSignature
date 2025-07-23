@@ -441,7 +441,6 @@ async def sign_document(uuid: str = Path(...), signer_email: str = Path(...)):
         signer = signers_list[current_index]
         input_path = session_data["file_path"]
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        # output_path = input_path.replace(".pdf", f"_signed_{current_index}.pdf")
 
         base_path, _ = os.path.splitext(input_path)
         output_path = f"{base_path}_signed_{current_index}.pdf"
@@ -449,14 +448,18 @@ async def sign_document(uuid: str = Path(...), signer_email: str = Path(...)):
         print(f"Input path: {input_path}")
         print(f"Output path: {output_path}")
 
-        with open(input_path, "rb") as inf:
-            w = IncrementalPdfFileWriter(inf, strict=False)
-
-            field_names = []
+        # Sign each location separately
+        current_file_path = input_path
+        
+        try:
+            signer_obj = signers.SimpleSigner.load(
+                key_file=key_file_path,
+                cert_file=cert_file_path
+            )
 
             for idx, loc in enumerate(signer.get("locations", [])):
                 keyword = f"Authorised Signature {current_index + 1}"  # dynamic keyword based on signer order
-                detected = find_keyword_position(input_path, keyword)
+                detected = find_keyword_position(current_file_path, keyword)
 
                 if detected:
                     print(f"Keyword '{keyword}' found: using auto-detected position")
@@ -468,45 +471,73 @@ async def sign_document(uuid: str = Path(...), signer_email: str = Path(...)):
                     x, y = loc["x"], loc["y"]
 
                 box = (x, y, x + 180, y + 50)
-                field_name = f"{signer_email.replace('@','_').replace('.','_')}_sig_{idx}"
-                field_names.append(field_name)
+                field_name = f"{signer_email.replace('@','_').replace('.','_')}_sig_{current_index}_{idx}"
+                
+                # Determine output path for this signature
+                if idx == len(signer.get("locations", [])) - 1:
+                    # Last signature goes to final output
+                    temp_output_path = output_path
+                else:
+                    # Intermediate signatures go to temp files
+                    temp_output_path = f"{base_path}_temp_{current_index}_{idx}.pdf"
 
-                fields.append_signature_field(
-                    w,
-                    sig_field_spec=fields.SigFieldSpec(field_name, box=box, on_page=page)
-                )
+                # Create new writer for each signature
+                with open(current_file_path, "rb") as inf:
+                    w = IncrementalPdfFileWriter(inf, strict=False)
 
-            pdf_signer = PdfSigner(
-                PdfSignatureMetadata(field_name=field_names[-1],),
-                signer=signers.SimpleSigner.load(
-                    key_file=key_file_path,
-                    cert_file=cert_file_path
-                ),
-                stamp_style=TextStampStyle(
-                    stamp_text=(f"{signer['signer_name']} (%(signer)s)\n"
-                        f"{signer['signer_email']}\n"
-                        f"%(ts)s"),
-                    text_box_style=TextBoxStyle(
-                        font=font_engine,
-                        font_size=8, 
-                        box_layout_rule=layout.SimpleBoxLayoutRule(
-                            x_align=layout.AxisAlignment.ALIGN_MIN, # Align text to the left
-                            y_align=layout.AxisAlignment.ALIGN_MIN,  # Align text to the top
-                            margins=layout.Margins(left=3, right=3, top=3, bottom=3), # Slightly smaller padding
-                            inner_content_scaling=layout.InnerScaling.SHRINK_TO_FIT # THIS IS KEY for wrapping/shrinking
+                    # Add signature field
+                    fields.append_signature_field(
+                        w,
+                        sig_field_spec=fields.SigFieldSpec(field_name, box=box, on_page=page)
+                    )
+
+                    # Create PDF signer with stamp
+                    pdf_signer = PdfSigner(
+                        PdfSignatureMetadata(field_name=field_name),
+                        signer=signer_obj,
+                        stamp_style=TextStampStyle(
+                            stamp_text=(f"{signer['signer_name']} (%(signer)s)\n"
+                                f"{signer['signer_email']}\n"
+                                f"%(ts)s"),
+                            text_box_style=TextBoxStyle(
+                                font=font_engine,
+                                font_size=8, 
+                                box_layout_rule=layout.SimpleBoxLayoutRule(
+                                    x_align=layout.AxisAlignment.ALIGN_MIN,
+                                    y_align=layout.AxisAlignment.ALIGN_MIN,
+                                    margins=layout.Margins(left=3, right=3, top=3, bottom=3),
+                                    inner_content_scaling=layout.InnerScaling.SHRINK_TO_FIT
+                                )
+                            )
                         )
                     )
-                )
-            )
-            
-            def blocking_sign_pdf():
-                with open(output_path, "wb") as outf:
-                    pdf_signer.sign_pdf(w, output=outf)
 
-            await run_in_threadpool(blocking_sign_pdf)
+                    # Sign the PDF
+                    def blocking_sign_pdf():
+                        with open(temp_output_path, "wb") as outf:
+                            pdf_signer.sign_pdf(w, output=outf)
 
-            # with open(output_path, "wb") as outf:
-            #     pdf_signer.sign_pdf(w, output=outf)
+                    await run_in_threadpool(blocking_sign_pdf)
+                    
+                print(f"Signature {idx + 1} created: {temp_output_path}, size: {os.path.getsize(temp_output_path) if os.path.exists(temp_output_path) else 'NOT FOUND'}")
+                
+                # Update current file path for next iteration
+                current_file_path = temp_output_path
+
+            # Clean up temporary files (but keep the final output)
+            for idx in range(len(signer.get("locations", [])) - 1):
+                temp_file = f"{base_path}_temp_{current_index}_{idx}.pdf"
+                if os.path.exists(temp_file):
+                    os.remove(temp_file)
+                    print(f"Cleaned up temp file: {temp_file}")
+
+        except Exception as e:
+            # Clean up any temp files in case of error
+            for idx in range(len(signer.get("locations", []))):
+                temp_file = f"{base_path}_temp_{current_index}_{idx}.pdf"
+                if os.path.exists(temp_file):
+                    os.remove(temp_file)
+            raise e
 
         # Step 5: Update session
         signer["status"] = "signed"
