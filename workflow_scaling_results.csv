@@ -1,4 +1,4 @@
 scenario,signers,sigs_per_signer,total_signatures,time_taken_sec,success
-A,2,1,2,4.720000000000001,True
-B,5,2,10,12.57,True
-C,10,3,30,27.81,True
+A,2,1,2,4.62,True
+B,5,2,10,12.61,True
+C,10,3,30,27.509999999999998,True

@@ -26,8 +26,8 @@ WORKFLOW_ID = "loadtest"
 test_files = [
     ("test_1p.pdf", 1),
     ("test_10p.pdf", 10),
-    # ("test_100p.pdf", 100),
-    # ("test_500p.pdf", 500),
+    ("test_100p.pdf", 100),
+    ("test_500p.pdf", 500)
     # ("test_1000p.pdf", 1000),
 ]
 

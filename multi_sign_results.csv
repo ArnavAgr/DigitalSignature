@@ -1,3 +1,5 @@
 filename,pages,time_taken_sec,success
-test_1p.pdf,1,2.46,True
-test_10p.pdf,10,4.1,True
+test_1p.pdf,1,2.32,True
+test_10p.pdf,10,4.05,True
+test_100p.pdf,100,47.99,True
+test_500p.pdf,500,863.42,True
