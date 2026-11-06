@@ -44,6 +44,54 @@
           <div id="cert-status" class="status-msg"></div>
         </section>
 
+        <!-- Step 4: Signature Appearance -->
+        <section class="section">
+          <label class="section-title">4. Signature Appearance</label>
+          <div class="stamp-toggle-group">
+            <label class="radio-label">
+              <input type="radio" name="stamp-type" value="visible" id="type-visible" checked />
+              <span>Visible Signature Stamp</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="stamp-type" value="invisible" id="type-invisible" />
+              <span>Invisible Signature</span>
+            </label>
+          </div>
+
+          <div id="visible-options" class="visible-options-card">
+            <div class="form-row">
+              <div class="form-col">
+                <label class="sub-label" for="stamp-page">Target Page:</label>
+                <select id="stamp-page" class="select-input">
+                  <option value="last">Last Page</option>
+                  <option value="first">First Page</option>
+                </select>
+              </div>
+              <div class="form-col">
+                <label class="sub-label" for="stamp-position">Position:</label>
+                <select id="stamp-position" class="select-input">
+                  <option value="bottom-right">Bottom Right</option>
+                  <option value="bottom-left">Bottom Left</option>
+                  <option value="top-right">Top Right</option>
+                  <option value="top-left">Top Left</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Live Stamp Preview -->
+            <label class="sub-label preview-label">Stamp Visual Preview:</label>
+            <div class="stamp-preview-box">
+              <div class="stamp-preview-accent"></div>
+              <div class="stamp-preview-content">
+                <div class="stamp-preview-title">DIGITALLY SIGNED</div>
+                <div id="preview-signer" class="stamp-preview-name">Authorized Signer</div>
+                <div id="preview-org" class="stamp-preview-org">Individual Verification</div>
+                <div id="preview-date" class="stamp-preview-date">Date: —</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- Action Section -->
         <div class="actions">
           <button id="sign-btn" class="btn btn-primary" disabled>Sign PDF Document</button>

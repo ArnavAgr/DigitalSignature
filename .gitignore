@@ -1,0 +1,35 @@
+# Virtual Environment & Python Caches
+myenv/
+__pycache__/
+*.pyc
+
+# IDE & Editor configs
+.vscode/
+.idea/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Generated PDFs & Images (Root and Subdirectories)
+*.pdf
+*.png
+*.jpg
+*.jpeg
+
+# Test & Session artifacts
+client/qa_output/
+sessions/
+uploads/
+logs/
+*.log
+
+# Sensitive Credentials / Certificates / Private Keys
+*.pfx
+*.p12
+*.pem
+*.key
+*.crt
+*.cer
+*.der
+
