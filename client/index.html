@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'none';
+      script-src 'self';
+      style-src 'self' 'unsafe-inline';
+      font-src 'self';
+      img-src data: blob:;
+      connect-src 'none';
+      media-src 'none';
+      object-src 'none';
+      child-src 'none';
+      worker-src 'self';
+      form-action 'none';
+      base-uri 'none';
+    " />
+    <title>Local Offline Digital Signer</title>
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="app-header">
+        <div class="badge offline-badge">🔒 100% Client-Side &bull; Offline Capable</div>
+        <h1>Offline Digital PDF Signer</h1>
+        <p class="subtitle">
+          Cryptographic signing occurs strictly inside your browser's local memory.
+          Files, keys, and passwords never leave your device.
+        </p>
+      </header>
+
+      <main class="card">
+        <!-- Step 1: Select PDF -->
+        <section class="section">
+          <label class="section-title" for="pdf-input">1. Select PDF Document (Unsigned)</label>
+          <input type="file" id="pdf-input" accept="application/pdf" />
+          <div id="pdf-status" class="status-msg"></div>
+        </section>
+
+        <!-- Step 2: Select PFX/P12 -->
+        <section class="section">
+          <label class="section-title" for="pfx-input">2. Select PKCS#12 Certificate (.pfx, .p12)</label>
+          <input type="file" id="pfx-input" accept=".pfx,.p12,application/x-pkcs12" />
+          <div id="pfx-file-status" class="status-msg"></div>
+        </section>
+
+        <!-- Step 3: Password & Unlock -->
+        <section class="section">
+          <label class="section-title" for="pfx-password">3. Certificate Password</label>
+          <input type="password" id="pfx-password" placeholder="Enter PFX password" autocomplete="off" />
+          <div id="cert-status" class="status-msg"></div>
+        </section>
+
+        <!-- Action Section -->
+        <div class="actions">
+          <button id="sign-btn" class="btn btn-primary" disabled>Sign PDF Document</button>
+          <button id="reset-btn" class="btn btn-secondary">Clear &amp; Reset</button>
+        </div>
+
+        <!-- Result / Download Area -->
+        <section id="result-section" class="result-box hidden">
+          <div class="success-icon">✓</div>
+          <h3>Document Signed Successfully!</h3>
+          <p id="result-details" class="result-details"></p>
+          <a id="download-link" class="btn btn-download" download="signed_document.pdf">Download Signed PDF</a>
+        </section>
+
+        <!-- Diagnostic / Security Notice -->
+        <footer class="footer-notice">
+          <small>
+            <strong>Standards Compliance:</strong> Conforms to PAdES Baseline B-B (ETSI EN 319 142-1 V1.2.1)
+            using detached ETSI.CAdES.detached SubFilter and SHA-256 signingCertificateV2.<br />
+            <strong>Memory Notice:</strong> Decrypted private keys are kept in ephemeral WebCrypto handles and never stored in localStorage, IndexedDB, or cookies.
+          </small>
+        </footer>
+      </main>
+    </div>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>
