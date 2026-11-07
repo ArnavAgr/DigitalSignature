@@ -8,17 +8,26 @@
     <!-- Embedded Data-URL Favicon (Zero external network requests, complies with img-src data: blob:) -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231a73e8'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E" />
     <!-- CSP_META_PLACEHOLDER -->
-    <title>Local Offline Digital Signer</title>
+    <title>SafeDoc Sign - Private PDF Digital Signing</title>
     <link rel="stylesheet" href="./src/style.css" />
   </head>
   <body>
     <div id="app">
       <header class="app-header">
-        <div class="badge offline-badge">🔒 100% Client-Side &bull; In-Browser Cryptography</div>
-        <h1>Digital Document Signer</h1>
+        <div class="badge privacy-badge">🔒 100% Client-Side &bull; In-Browser Cryptography</div>
+        <h1>Sign PDFs using your PFX certificate.</h1>
         <p class="subtitle">
-          Cryptographic signing occurs strictly inside your browser's local memory.
-          Files, keys, and passwords never leave your device.
+          Private, browser-based digital document signing. No software installation or account required.
+        </p>
+        <div class="steps-flow">
+          <span class="step-item"><span class="step-badge">1</span>Select PDF</span>
+          <span class="step-arrow">&rarr;</span>
+          <span class="step-item"><span class="step-badge">2</span>Select PFX/P12</span>
+          <span class="step-arrow">&rarr;</span>
+          <span class="step-item"><span class="step-badge">3</span>Enter certificate password</span>
+        </div>
+        <p class="privacy-statement">
+          Your PDF, certificate and password are processed in your browser. They are never uploaded to our servers.
         </p>
       </header>
 
@@ -109,8 +118,7 @@
         <!-- Diagnostic / Security Notice -->
         <footer class="footer-notice">
           <small>
-            <strong>Standards Compliance:</strong> Conforms to PAdES Baseline B-B (ETSI EN 319 142-1 V1.2.1)
-            using /ETSI.CAdES.detached SubFilter and SHA-256 signingCertificateV2.<br />
+            <strong>Standards Compliance:</strong> Creates cryptographically signed PDFs using detached CMS signatures, SHA-256 and signingCertificateV2, with PAdES-compatible signing support.<br />
             <strong>Memory Notice:</strong> Decrypted private keys are kept in ephemeral WebCrypto handles and never stored in localStorage, IndexedDB, or cookies.
           </small>
         </footer>

@@ -253,7 +253,7 @@ signBtn.addEventListener('click', async () => {
         <div><strong>Cryptographic Integrity:</strong> <span style="color: #137333; font-weight: 600;">✓ Intact &amp; Valid</span> (ByteRange SHA-256 verified)</div>
         <div><strong>Appearance Mode:</strong> ${escapeHtml(stampTypeLabel)}</div>
         <div><strong>Mechanism:</strong> SHA-256 with ${signerContext.details.keySizeBits}-bit RSA</div>
-        <div><strong>Format:</strong> /ETSI.CAdES.detached (PAdES Baseline B-B profile aligned)</div>
+        <div><strong>Standards Compliance:</strong> Creates cryptographically signed PDFs using detached CMS signatures, SHA-256 and signingCertificateV2, with PAdES-compatible signing support.</div>
         ${warningsHtml}
         <div style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(0,0,0,0.04); border-radius: 4px; font-size: 0.78rem; color: #3c4043;">
           ℹ️ <strong>Trust Model Notice:</strong> The cryptographic signature and document integrity are mathematically sound. Validation in Adobe Acrobat or external verifiers depends on whether the recipient trusts your certificate's root CA chain.
